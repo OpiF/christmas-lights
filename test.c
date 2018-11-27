@@ -17,9 +17,12 @@ void changeTarget(uint16_t target);
 
 uint32_t volatile ms = 0;
 uint32_t lastMeasurement = 0;
+uint32_t currentTimeout = 0;
 uint16_t currentTarget = 0;
 uint8_t currentPWM = 0;
-uint8_t currentState = STATE_SETUP;
+uint8_t currentState = STATE_HIGH_INTENSITY;
+uint8_t previousState = STATE_SETUP;
+uint8_t nextState = STATE_SETUP;
 
 const uint8_t maxPWM = 64;
 const uint16_t targetLow = 185;
@@ -51,39 +54,47 @@ void setup() {
 }
 
 void loop() {
-    switch(currentState) {
-        case STATE_HIGH_INTENSITY:
-            if (ms > highTime) {
-                ms = 0;
-                currentState = STATE_LOW_INTENSITY;
-                changeTarget(targetLow);
+    if (currentState != previousState) {
+        switch(currentState) {
+            case STATE_HIGH_INTENSITY:
+                changeTarget(targetHigh);
+                currentTimeout = highTime;
+                nextState = STATE_LOW_INTENSITY;
 
                 set_sleep_mode(SLEEP_MODE_IDLE);
-            }
 
-            break;
-        case STATE_LOW_INTENSITY:
-            if (ms > lowTime) {
-                ms = 0;
-                currentState = STATE_WAITING;
+                break;
+            case STATE_LOW_INTENSITY:
+                changeTarget(targetLow);
+                currentTimeout = lowTime;
+                nextState = STATE_WAITING;
+
+                set_sleep_mode(SLEEP_MODE_IDLE);
+
+                break;
+            case STATE_WAITING:
                 changeTarget(0);
+                currentTimeout = highTime;
+                nextState = STATE_HIGH_INTENSITY;
 
                 set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-            }
 
-            break;
-        case STATE_WAITING:
-            if (ms <= offTime) {
-                return;
-            }
-	default:
-            ms = 0;
-            currentState = STATE_HIGH_INTENSITY;
-            changeTarget(targetHigh);
+                break;
+            default:
+                currentState = STATE_HIGH_INTENSITY;
 
-            set_sleep_mode(SLEEP_MODE_IDLE);
+                break;
+        }
 
-            break;
+        ms = 0;
+        lastMeasurement = 0;
+        previousState = currentState;
+    }
+
+    if (ms > currentTimeout) {
+        currentState = nextState;
+
+        return;
     }
 
     if (lastMeasurement + measurementDelay <= ms) {
