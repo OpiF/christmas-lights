@@ -11,6 +11,7 @@
 void adc_enable();
 void adc_disable();
 int16_t adc_read();
+int16_t adc_avg();
 uint8_t guessTargetPWM(uint16_t target);
 void changeTarget(uint16_t target);
 
@@ -44,8 +45,7 @@ void setup() {
     TCCR0B = _BV(CS00);
     DDRB = _BV(PB1);
 
-    currentTarget = targetHigh;
-    OCR0B = 255 - guessTargetPWM(currentTarget);
+    changeTarget(targetHigh);
 
     sei();
 }
@@ -90,7 +90,7 @@ void loop() {
         lastMeasurement = ms;
 
         adc_enable();
-        int16_t m = adc_read();
+        int16_t m = adc_avg();
         if (m < currentTarget) {
             currentPWM++;
         } else if (m > currentTarget) {
@@ -134,7 +134,16 @@ int16_t adc_read() {
 }
 
 int16_t adc_avg() {
+    int32_t sum = 0;
+    const int count = 20;
 
+    for (int i = 0; i < count; i++) {
+        sum += adc_read();
+    }
+
+    sum /= count;
+
+    return sum;
 }
 
 uint8_t guessTargetPWM(uint16_t target)
