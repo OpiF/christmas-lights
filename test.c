@@ -10,8 +10,8 @@
 
 void adc_enable();
 void adc_disable();
-int16_t adc_read();
-int16_t adc_avg();
+uint16_t adc_read();
+uint16_t adc_avg();
 uint8_t guessTargetPWM(uint16_t target);
 void changeTarget(uint16_t target);
 
@@ -90,7 +90,7 @@ void loop() {
         lastMeasurement = ms;
 
         adc_enable();
-        int16_t m = adc_avg();
+        uint16_t m = adc_avg();
         if (m < currentTarget) {
             currentPWM++;
         } else if (m > currentTarget) {
@@ -125,7 +125,7 @@ void adc_disable() {
     ADCSRA &= ~_BV(ADEN);
 }
 
-int16_t adc_read() {
+uint16_t adc_read() {
     ADCSRA |= _BV(ADSC);
 
     while (ADCSRA & _BV(ADSC));
@@ -133,7 +133,7 @@ int16_t adc_read() {
     return ADC;
 }
 
-int16_t adc_avg() {
+uint16_t adc_avg() {
     int32_t sum = 0;
     const int count = 20;
 
