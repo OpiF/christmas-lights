@@ -12,6 +12,8 @@ void adc_enable();
 void adc_disable();
 uint16_t adc_read();
 uint16_t adc_avg();
+void clearms();
+uint32_t getms();
 uint8_t guessTargetPWM(uint16_t target);
 void changeTarget(uint16_t target);
 
@@ -86,19 +88,19 @@ void loop() {
                 break;
         }
 
-        ms = 0;
+        clearms();
         lastMeasurement = 0;
         previousState = currentState;
     }
 
-    if (ms > currentTimeout) {
+    if (getms() > currentTimeout) {
         currentState = nextState;
 
         return;
     }
 
-    if (lastMeasurement + measurementDelay <= ms) {
-        lastMeasurement = ms;
+    if (lastMeasurement + measurementDelay <= getms()) {
+        lastMeasurement = getms();
 
         adc_enable();
         uint16_t m = adc_avg();
@@ -176,4 +178,22 @@ void changeTarget(uint16_t target)
     currentPWM = (currentPWM < maxPWM)? currentPWM : maxPWM;
     currentPWM = (currentPWM < 0)? 0 : currentPWM;
     OCR0B = 255 - currentPWM;
+}
+
+uint32_t getms()
+{
+    uint32_t tmp;
+
+    cli();
+    tmp = ms;
+    sei();
+
+    return tmp;
+}
+
+void clearms()
+{
+    cli();
+    ms = 0;
+    sei();
 }
