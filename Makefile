@@ -1,4 +1,4 @@
-MCU=attiny13
+MCU=attiny13a
 #F_CPU=1200000
 F_CPU=9600000
 CC=avr-gcc

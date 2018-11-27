@@ -114,6 +114,7 @@ int main(void) {
 }
 
 void adc_enable() {
+    PRR |= _BV(PRADC);
     ADMUX = _BV(REFS0) /* | _BV(ADLAR) */ | _BV(MUX1);
     ADCSRA = _BV(ADPS1) | _BV(ADPS0) | _BV(ADEN);
 
@@ -123,6 +124,7 @@ void adc_enable() {
 
 void adc_disable() {
     ADCSRA &= ~_BV(ADEN);
+    PRR &= ~_BV(PRADC);
 }
 
 uint16_t adc_read() {
