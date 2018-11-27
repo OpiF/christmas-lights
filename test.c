@@ -46,9 +46,10 @@ void setup() {
     WDTCR = _BV(WDCE);
     WDTCR = _BV(WDP2) | _BV(WDP1) | _BV(WDTIE);
 
-    TCCR0A = _BV(WGM01) | _BV(WGM00) | _BV(COM0B1) | _BV(COM0B0);
+    TCCR0A = _BV(WGM01) | _BV(WGM00) | _BV(COM0B1) | _BV(COM0B0)/*  | _BV(COM0A1) | _BV(COM0A0) */;
     TCCR0B = _BV(CS00);
-    DDRB = _BV(PB1);
+    DDRB = _BV(DDB1)/*  | _BV(DDB0) */;
+    DIDR0 = _BV(ADC2D);
 
     changeTarget(targetHigh);
 
@@ -113,6 +114,7 @@ void loop() {
         currentPWM = (currentPWM < maxPWM)? currentPWM : maxPWM;
         currentPWM = (currentPWM < 0)? 0 : currentPWM;
         OCR0B = 255 - currentPWM;
+        // OCR0A = 255 - (m >> 2);
     }
 }
 
@@ -128,9 +130,9 @@ int main(void) {
 
 void adc_enable() {
 #ifdef __AVR_HAVE_PRR_PRADC
-    PRR |= _BV(PRADC);
+    PRR &= ~_BV(PRADC);
 #endif
-    ADMUX = _BV(REFS0) /* | _BV(ADLAR) */ | _BV(MUX1);
+    ADMUX = _BV(REFS0) | /* _BV(ADLAR) | */ _BV(MUX1);
     ADCSRA = _BV(ADPS1) | _BV(ADPS0) | _BV(ADEN);
 
     //throw-away reading
@@ -140,7 +142,7 @@ void adc_enable() {
 void adc_disable() {
     ADCSRA &= ~_BV(ADEN);
 #ifdef __AVR_HAVE_PRR_PRADC
-    PRR &= ~_BV(PRADC);
+    PRR |= _BV(PRADC);
 #endif
 }
 
@@ -154,7 +156,7 @@ uint16_t adc_read() {
 
 uint16_t adc_avg() {
     int32_t sum = 0;
-    const int count = 20;
+    const int count = 16;
 
     for (int i = 0; i < count; i++) {
         sum += adc_read();
