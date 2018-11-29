@@ -4,8 +4,9 @@
 
 #define STATE_SETUP	0
 #define STATE_HIGH_INTENSITY	1
-#define STATE_LOW_INTENSITY	2
-#define STATE_WAITING	3
+#define STATE_LOW_INTENSITY 2
+#define STATE_HIGH_INTENSITY2	3
+#define STATE_WAITING	4
 
 
 void adc_enable();
@@ -28,16 +29,21 @@ uint8_t nextState = STATE_SETUP;
 
 const uint8_t maxPWM = 64;
 const uint16_t targetLow = 185;
-const uint16_t targetHigh = 465;
-const uint32_t measurementDelay = 5l * 1000l;
+const uint16_t targetHigh = 466;
+const uint32_t measurementDelay = 2l * 1000l;
 
 //on-off times
-const uint32_t highTime = 3l * 60l * 1000l;
-const uint32_t lowTime = 1l * 60l * 1000l;
-const uint32_t offTime = 2l * 60l * 1000l;
+const uint32_t highTime = 3l * 60l * 60l * 1000l + 45l * 60l * 1000l;;
+const uint32_t lowTime = 30l * 60l * 1000l;
+const uint32_t offTime = 16l * 60l * 60l * 1000l;
+const uint32_t recurringDrop = 1l * 60l * 60l * 1000l;
+const uint32_t recurringDropWindow = 10l * 1000l;
+// const uint32_t highTime = 2l * 60l * 1000l;
+// const uint32_t lowTime = 1l * 60l * 1000l;
+// const uint32_t offTime = 2l * 60l * 1000l;
 
 ISR(WDT_vect) {
-    ms += 1000l + 300l;
+    ms += 1000l + 185l; //korekta zegara
 }
 
 void setup() {
@@ -70,6 +76,14 @@ void loop() {
             case STATE_LOW_INTENSITY:
                 changeTarget(targetLow);
                 currentTimeout = lowTime;
+                nextState = STATE_HIGH_INTENSITY2;
+
+                set_sleep_mode(SLEEP_MODE_IDLE);
+
+                break;
+            case STATE_HIGH_INTENSITY2:
+                changeTarget(targetHigh);
+                currentTimeout = highTime;
                 nextState = STATE_WAITING;
 
                 set_sleep_mode(SLEEP_MODE_IDLE);
@@ -94,17 +108,33 @@ void loop() {
         previousState = currentState;
     }
 
-    if (getms() > currentTimeout) {
+    uint32_t tms = getms();
+    if (tms > currentTimeout) {
         currentState = nextState;
 
         return;
+    } else if (tms > recurringDrop && tms % recurringDrop < recurringDropWindow) {
+        uint8_t oldPWM = currentPWM;
+        for (int i = 0; i < 8; i++){
+            while (currentPWM > 0) {
+                currentPWM--;
+                OCR0B = 255 - currentPWM;
+                _delay_ms(200);
+            }
+            while (currentPWM < maxPWM) {
+                currentPWM++;
+                OCR0B = 255 - currentPWM;
+                _delay_ms(200);
+            }
+        }
+        currentPWM = oldPWM;
     }
 
     if (lastMeasurement + measurementDelay <= getms()) {
         lastMeasurement = getms();
 
         adc_enable();
-        uint16_t m = adc_avg();
+        uint16_t m = adc_read();
         if (m < currentTarget) {
             currentPWM++;
         } else if (m > currentTarget) {
@@ -156,13 +186,13 @@ uint16_t adc_read() {
 
 uint16_t adc_avg() {
     int32_t sum = 0;
-    const int count = 16;
+    // const int count = 16;
 
-    for (int i = 0; i < count; i++) {
-        sum += adc_read();
-    }
+    // for (int i = 0; i < count; i++) {
+    //     sum += adc_read();
+    // }
 
-    sum /= count;
+    // sum /= count;
 
     return sum;
 }
