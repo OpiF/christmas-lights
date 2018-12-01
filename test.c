@@ -29,11 +29,11 @@ uint8_t nextState = STATE_SETUP;
 
 const uint8_t maxPWM = 64;
 const uint16_t targetLow = 185;
-const uint16_t targetHigh = 466;
+const uint16_t targetHigh = 556;
 const uint32_t measurementDelay = 2l * 1000l;
 
 //on-off times
-const uint32_t highTime = 3l * 60l * 60l * 1000l + 45l * 60l * 1000l;;
+const uint32_t highTime = 3l * 60l * 60l * 1000l;
 const uint32_t lowTime = 30l * 60l * 1000l;
 const uint32_t offTime = 16l * 60l * 60l * 1000l;
 const uint32_t recurringDrop = 1l * 60l * 60l * 1000l;
@@ -115,16 +115,16 @@ void loop() {
         return;
     } else if (tms > recurringDrop && tms % recurringDrop < recurringDropWindow) {
         uint8_t oldPWM = currentPWM;
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < 16; i++){
             while (currentPWM > 0) {
                 currentPWM--;
                 OCR0B = 255 - currentPWM;
-                _delay_ms(200);
+                _delay_ms(50);
             }
-            while (currentPWM < maxPWM) {
+            while (currentPWM < 127) {
                 currentPWM++;
                 OCR0B = 255 - currentPWM;
-                _delay_ms(200);
+                _delay_ms(50);
             }
         }
         currentPWM = oldPWM;
