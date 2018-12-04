@@ -13,8 +13,8 @@ void adc_enable();
 void adc_disable();
 uint16_t adc_read();
 uint16_t adc_avg();
-void clearms();
-uint32_t getms();
+void clock_reset();
+uint32_t clock();
 uint8_t guessTargetPWM(uint16_t target);
 void changeTarget(uint16_t target);
 
@@ -30,6 +30,7 @@ uint8_t nextState = STATE_SETUP;
 const uint8_t maxPWM = 64;
 const uint16_t targetLow = 185;
 const uint16_t targetHigh = 556;
+const uint16_t ms_per_tick = 1000l + 185l; // korekta zegara
 const uint32_t measurementDelay = 2l * 1000l;
 
 //on-off times
@@ -38,12 +39,9 @@ const uint32_t lowTime = 30l * 60l * 1000l;
 const uint32_t offTime = 16l * 60l * 60l * 1000l;
 const uint32_t recurringDrop = 1l * 60l * 60l * 1000l;
 const uint32_t recurringDropWindow = 10l * 1000l;
-// const uint32_t highTime = 2l * 60l * 1000l;
-// const uint32_t lowTime = 1l * 60l * 1000l;
-// const uint32_t offTime = 2l * 60l * 1000l;
 
 ISR(WDT_vect) {
-    ms += 1000l + 185l; //korekta zegara
+    ms += ms_per_tick;
 }
 
 void setup() {
@@ -103,12 +101,12 @@ void loop() {
                 break;
         }
 
-        clearms();
+        clock_reset();
         lastMeasurement = 0;
         previousState = currentState;
     }
 
-    uint32_t tms = getms();
+    uint32_t tms = clock();
     if (tms > currentTimeout) {
         currentState = nextState;
 
@@ -130,8 +128,8 @@ void loop() {
         currentPWM = oldPWM;
     }
 
-    if (lastMeasurement + measurementDelay <= getms()) {
-        lastMeasurement = getms();
+    if (lastMeasurement + measurementDelay <= clock()) {
+        lastMeasurement = clock();
 
         adc_enable();
         uint16_t m = adc_read();
@@ -216,7 +214,7 @@ void changeTarget(uint16_t target)
     OCR0B = 255 - currentPWM;
 }
 
-uint32_t getms()
+uint32_t clock()
 {
     uint32_t tmp;
 
@@ -227,7 +225,7 @@ uint32_t getms()
     return tmp;
 }
 
-void clearms()
+void clock_reset()
 {
     cli();
     ms = 0;
