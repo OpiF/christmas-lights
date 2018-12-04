@@ -1,10 +1,9 @@
 MCU=attiny13a
 dMCU=attiny13
-#F_CPU=1200000
 F_CPU=9600000
-CC=avr-gcc
+CC=avr-g++
 OBJCOPY=avr-objcopy
-CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
+CFLAGS=-std=c++11 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
 TARGET=test
 SRCS=main.c
 SIZE=avr-size -C
