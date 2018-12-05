@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include "src/adc.h"
+#include "src/clock.h"
 
 #define STATE_SETUP	0
 #define STATE_HIGH_INTENSITY	1
@@ -10,12 +11,9 @@
 #define STATE_WAITING	4
 
 
-void clock_reset();
-uint32_t clock();
 uint8_t guessTargetPWM(uint16_t target);
 void changeTarget(uint16_t target);
 
-uint32_t volatile ms = 0;
 uint32_t lastMeasurement = 0;
 uint32_t currentTimeout = 0;
 uint16_t currentTarget = 0;
@@ -27,7 +25,7 @@ uint8_t nextState = STATE_SETUP;
 const uint8_t maxPWM = 64;
 const uint16_t targetLow = 185;
 const uint16_t targetHigh = 556;
-const uint16_t ms_per_tick = 1000l + 185l; // korekta zegara
+
 const uint32_t measurementDelay = 2l * 1000l;
 
 //on-off times
@@ -36,10 +34,6 @@ const uint32_t lowTime = 30l * 60l * 1000l;
 const uint32_t offTime = 16l * 60l * 60l * 1000l;
 const uint32_t recurringDrop = 1l * 60l * 60l * 1000l;
 const uint32_t recurringDropWindow = 10l * 1000l;
-
-ISR(WDT_vect) {
-    ms += ms_per_tick;
-}
 
 void setup() {
     cli();
@@ -170,25 +164,4 @@ void changeTarget(uint16_t target)
     currentPWM = (currentPWM < maxPWM)? currentPWM : maxPWM;
     currentPWM = (currentPWM < 0)? 0 : currentPWM;
     OCR0B = 255 - currentPWM;
-}
-
-uint32_t clock()
-{
-    uint32_t tmp;
-    uint8_t tSREG = SREG;
-
-    cli();
-    tmp = ms;
-    SREG = tSREG;
-
-    return tmp;
-}
-
-void clock_reset()
-{
-    uint8_t tSREG = SREG;
-
-    cli();
-    ms = 0;
-    SREG = tSREG;
 }
