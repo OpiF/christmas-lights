@@ -1,6 +1,7 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include "src/adc.h"
 
 #define STATE_SETUP	0
 #define STATE_HIGH_INTENSITY	1
@@ -9,10 +10,6 @@
 #define STATE_WAITING	4
 
 
-void adc_enable();
-void adc_disable();
-uint16_t adc_read();
-uint16_t adc_avg();
 void clock_reset();
 uint32_t clock();
 uint8_t guessTargetPWM(uint16_t target);
@@ -154,45 +151,6 @@ int main(void) {
         adc_disable();
         sleep_mode();
     }
-}
-
-void adc_enable() {
-#ifdef __AVR_HAVE_PRR_PRADC
-    PRR &= ~_BV(PRADC);
-#endif
-    ADMUX = _BV(REFS0) | /* _BV(ADLAR) | */ _BV(MUX1);
-    ADCSRA = _BV(ADPS1) | _BV(ADPS0) | _BV(ADEN);
-
-    //throw-away reading
-    adc_read();
-}
-
-void adc_disable() {
-    ADCSRA &= ~_BV(ADEN);
-#ifdef __AVR_HAVE_PRR_PRADC
-    PRR |= _BV(PRADC);
-#endif
-}
-
-uint16_t adc_read() {
-    ADCSRA |= _BV(ADSC);
-
-    while (ADCSRA & _BV(ADSC));
-
-    return ADC;
-}
-
-uint16_t adc_avg() {
-    int32_t sum = 0;
-    // const int count = 16;
-
-    // for (int i = 0; i < count; i++) {
-    //     sum += adc_read();
-    // }
-
-    // sum /= count;
-
-    return sum;
 }
 
 uint8_t guessTargetPWM(uint16_t target)
