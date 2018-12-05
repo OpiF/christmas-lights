@@ -4,18 +4,18 @@ F_CPU=9600000
 CC=avr-g++
 OBJCOPY=avr-objcopy
 CFLAGS=-std=c++11 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
-TARGET=test
+TARGET=main
 SRCS=main.c
 SIZE=avr-size -C
 
 
 all: ${TARGET}.hex
 
-asm: test.c
-	${CC} ${CFLAGS} -S -o ${TARGET}.asm test.c
+asm: main.c src/*.c
+	${CC} ${CFLAGS} -S -o ${TARGET}.asm main.c src/*.c
 
-${TARGET}.bin: test.c Makefile
-	${CC} ${CFLAGS} -o ${TARGET}.bin test.c
+${TARGET}.bin: main.c src/*.c Makefile
+	${CC} ${CFLAGS} -o ${TARGET}.bin main.c src/*.c
 	${SIZE} --mcu ${MCU} "$@"
 
 ${TARGET}.hex: ${TARGET}.bin
