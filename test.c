@@ -175,17 +175,20 @@ void changeTarget(uint16_t target)
 uint32_t clock()
 {
     uint32_t tmp;
+    uint8_t tSREG = SREG;
 
     cli();
     tmp = ms;
-    sei();
+    SREG = tSREG;
 
     return tmp;
 }
 
 void clock_reset()
 {
+    uint8_t tSREG = SREG;
+
     cli();
     ms = 0;
-    sei();
+    SREG = tSREG;
 }
