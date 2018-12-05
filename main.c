@@ -104,7 +104,7 @@ void loop() {
         return;
     } else if (tms > recurringDrop && tms % recurringDrop < recurringDropWindow) {
         uint8_t oldPWM = currentPWM;
-        for (int i = 0; i < 16; i++){
+        for (uint8_t i = 0; i < 16; i++){
             while (currentPWM > 0) {
                 currentPWM--;
                 OCR0B = 255 - currentPWM;
@@ -133,7 +133,6 @@ void loop() {
         currentPWM = (currentPWM < maxPWM)? currentPWM : maxPWM;
         currentPWM = (currentPWM < 0)? 0 : currentPWM;
         OCR0B = 255 - currentPWM;
-        // OCR0A = 255 - (m >> 2);
     }
 }
 
