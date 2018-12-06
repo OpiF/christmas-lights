@@ -1,22 +1,22 @@
 MCU=attiny13a
 dMCU=attiny13
-#F_CPU=1200000
 F_CPU=9600000
-CC=avr-gcc
+CC=avr-g++
 OBJCOPY=avr-objcopy
-CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
-TARGET=test
-SRCS=main.c
+CFLAGS=-std=c++11 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
+TARGET=main
+SRCS=main.c src/*.c
+HEADERS=src/*.h
 SIZE=avr-size -C
 
 
 all: ${TARGET}.hex
 
-asm: test.c
-	${CC} ${CFLAGS} -S -o ${TARGET}.asm test.c
+asm: ${SRCS}
+	${CC} ${CFLAGS} -S -o ${TARGET}.asm ${SRCS}
 
-${TARGET}.bin: test.c Makefile
-	${CC} ${CFLAGS} -o ${TARGET}.bin test.c
+${TARGET}.bin: Makefile ${SRCS} ${HEADERS}
+	${CC} ${CFLAGS} -o ${TARGET}.bin ${SRCS}
 	${SIZE} --mcu ${MCU} "$@"
 
 ${TARGET}.hex: ${TARGET}.bin
