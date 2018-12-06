@@ -36,7 +36,7 @@ const uint32_t recurringDrop = 1l * 60l * 60l * 1000l;
 const uint32_t recurringDropWindow = 10l * 1000l;
 
 void setup() {
-    cli();
+    // cli(); // not required because default SREG value is 0;
 
     WDTCR = _BV(WDCE);
     WDTCR = _BV(WDP2) | _BV(WDP1) | _BV(WDTIE);
