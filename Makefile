@@ -6,6 +6,7 @@ OBJCOPY=avr-objcopy
 CFLAGS=-std=c++11 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
 TARGET=main
 SRCS=main.c src/*.c
+HEADERS=src/*.h
 SIZE=avr-size -C
 
 
@@ -14,7 +15,7 @@ all: ${TARGET}.hex
 asm: ${SRCS}
 	${CC} ${CFLAGS} -S -o ${TARGET}.asm ${SRCS}
 
-${TARGET}.bin: Makefile ${SRCS}
+${TARGET}.bin: Makefile ${SRCS} ${HEADERS}
 	${CC} ${CFLAGS} -o ${TARGET}.bin ${SRCS}
 	${SIZE} --mcu ${MCU} "$@"
 
