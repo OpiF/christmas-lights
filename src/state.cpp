@@ -1,6 +1,5 @@
 #include <util/delay.h>
 #include <avr/sleep.h>
-#include "src/adc.h"
 #include "src/pwm.h"
 #include "src/clock.h"
 #include "src/state.h"

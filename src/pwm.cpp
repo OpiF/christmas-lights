@@ -35,6 +35,7 @@ void adjustPWM()
 {
     adc_enable();
 
+    adc_select<ADCPin::ADC2>();
     uint16_t m = adc_read();
     if (m < currentTarget) {
         currentPWM++;
