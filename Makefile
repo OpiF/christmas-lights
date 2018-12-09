@@ -12,8 +12,8 @@ SIZE=avr-size -C
 
 all: ${TARGET}.hex
 
-asm: ${SRCS}
-	${CC} ${CFLAGS} -S -o ${TARGET}.asm ${SRCS}
+asm: ${SRCS} ${HEADERS}
+	${CC} ${CFLAGS} -S ${SRCS}
 
 ${TARGET}.bin: Makefile ${SRCS} ${HEADERS}
 	${CC} ${CFLAGS} -o ${TARGET}.bin ${SRCS}
@@ -29,4 +29,4 @@ fuse:
 	avrdude -p ${dMCU} -c usbasp -U lfuse:w:0x7A:m -P usb
 
 clean:
-	rm -f *.bin *.hex
+	rm -f *.bin *.hex *.s
