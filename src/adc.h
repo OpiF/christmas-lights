@@ -37,8 +37,6 @@ template<ADCPin pin> void adc_select()
             ADMUX |= _BV(MUX0);
 
             break;
-        default:
-            break;
     }
 }
 
