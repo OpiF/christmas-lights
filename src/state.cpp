@@ -29,15 +29,18 @@ void stateTransition(State newState)
         case State::Working:
             set_sleep_mode(SLEEP_MODE_IDLE);
             changeTarget(targetHigh);
+            PORTB |= _BV(PB2);
 
             break;
         case State::Resting:
             set_sleep_mode(SLEEP_MODE_IDLE);
             changeTarget(targetLow);
+            PORTB |= _BV(PB2);
 
             break;
         case State::Sleep:
             set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+            PORTB &= ~_BV(PB2);
 
             break;
     }
