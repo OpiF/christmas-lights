@@ -2,7 +2,6 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include "src/adc.h"
-#include "src/pwm.h"
 #include "src/state.h"
 
 void setup() {
@@ -21,7 +20,6 @@ void setup() {
 
 void loop() {
     stateFunction();
-    adjustPWM();
 }
 
 int main(void) {

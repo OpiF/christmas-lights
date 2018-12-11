@@ -21,9 +21,9 @@ void stateTransition(State newState)
 {
     switch (newState) {
         case State::Init:
-            clock_reset();
-            wasResting = false;
             set_sleep_mode(SLEEP_MODE_IDLE);
+            wasResting = false;
+            clock_reset();
 
             break;
         case State::Working:
@@ -68,6 +68,7 @@ void stateFunction()
             } else if (clock() > recurringBreak && clock() % recurringBreak < recurringBreakWindow) {
                 blink(32);
             }
+            adjustPWM();
 
             break;
         case State::Resting:
@@ -75,6 +76,7 @@ void stateFunction()
                 wasResting = true;
                 stateTransition(State::Working);
             }
+            adjustPWM();
 
             break;
         case State::Sleep:

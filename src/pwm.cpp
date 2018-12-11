@@ -51,8 +51,8 @@ void adjustPWM()
 void blink(uint8_t count)
 {
     const int delay = 32;
+    const uint8_t oldPWM = currentPWM;
 
-    uint8_t oldPWM = currentPWM;
     for (uint8_t i = 0; i < count; i++) {
         while (currentPWM > 0) {
             currentPWM--;
@@ -66,6 +66,7 @@ void blink(uint8_t count)
         }
     }
 
+    // smooth ease-out
     while (currentPWM > oldPWM) {
         currentPWM--;
         _delay_ms(delay);
