@@ -5,7 +5,7 @@
 
 void changeTarget(uint16_t target);
 void adjustPWM();
-void blink();
+void blink(uint8_t count);
 
 extern const uint16_t targetHigh;
 extern const uint16_t targetLow;

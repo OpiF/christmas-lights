@@ -36,6 +36,7 @@ void stateTransition(State newState)
             set_sleep_mode(SLEEP_MODE_IDLE);
             changeTarget(targetLow);
             PORTB |= _BV(PB2);
+            blink(2);
 
             break;
         case State::Sleep:
@@ -65,7 +66,7 @@ void stateFunction()
                     stateTransition(State::Resting);
                 }
             } else if (clock() > recurringBreak && clock() % recurringBreak < recurringBreakWindow) {
-                blink();
+                blink(32);
             }
 
             break;

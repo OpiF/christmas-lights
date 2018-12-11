@@ -48,20 +48,27 @@ void adjustPWM()
     OCR0B = 255 - currentPWM;
 }
 
-void blink()
+void blink(uint8_t count)
 {
+    const int delay = 32;
+
     uint8_t oldPWM = currentPWM;
-    for (uint8_t i = 0; i < 32; i++) {
+    for (uint8_t i = 0; i < count; i++) {
         while (currentPWM > 0) {
             currentPWM--;
             OCR0B = 255 - currentPWM;
-            _delay_ms(32);
+            _delay_ms(delay);
         }
         while (currentPWM < blinkPWM) {
             currentPWM++;
             OCR0B = 255 - currentPWM;
-            _delay_ms(32);
+            _delay_ms(delay);
         }
     }
-    currentPWM = oldPWM;
+
+    while (currentPWM > oldPWM) {
+        currentPWM--;
+        _delay_ms(delay);
+    }
+    currentPWM = oldPWM; // just to be sure
 }
