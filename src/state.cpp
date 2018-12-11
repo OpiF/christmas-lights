@@ -64,7 +64,7 @@ void stateFunction()
                 } else {
                     stateTransition(State::Resting);
                 }
-            } else if (clock() % recurringBreak < recurringBreakWindow) {
+            } else if (clock() > recurringBreak && clock() % recurringBreak < recurringBreakWindow) {
                 blink();
             }
 
