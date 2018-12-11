@@ -10,12 +10,12 @@ void blink(uint8_t count);
 extern const uint16_t targetHigh;
 extern const uint16_t targetLow;
 
-const uint32_t resistorValue = 10000; // mOhm
-const uint32_t referenceVoltage = 1100; // mV
+const uint32_t resistorValue = 10000ul; // mOhm
+const uint32_t referenceVoltage = 1100ul; // mV
 
 constexpr uint16_t operator "" _mA(unsigned long long mA)
 {
-    return (mA * resistorValue * 1024) / referenceVoltage / 1000;
+    return (mA * resistorValue * 1024ul) / referenceVoltage / 1000ul;
 }
 
 #endif
