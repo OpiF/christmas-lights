@@ -3,15 +3,15 @@
         {
             "name": "Linux",
             "includePath": [
+                "/usr/lib/avr/include/",
                 "${workspaceFolder}/**"
             ],
             "defines": [
                 "__AVR_ATtiny13A__"
             ],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "/usr/bin/avr-g++",
             "cStandard": "c11",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "cppStandard": "c++11"
         }
     ],
     "version": 4
