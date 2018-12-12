@@ -15,7 +15,7 @@ const uint32_t workTime = 3_h + 45_min;
 const uint32_t breakTime = 30_min;
 const uint32_t offTime = 16_h;
 const uint32_t recurringBreak = 1_h;
-const uint32_t recurringBreakWindow = 15_sec;
+const uint32_t recurringBreakWindow = 10_sec;
 
 void stateTransition(State newState)
 {
@@ -41,6 +41,7 @@ void stateTransition(State newState)
             break;
         case State::Sleep:
             set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+            changeTarget(0);
             PORTB &= ~_BV(PB2);
 
             break;

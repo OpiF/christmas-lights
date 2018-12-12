@@ -8,8 +8,8 @@ static uint8_t currentPWM = 0;
 static const uint8_t maxPWM = 64;
 static const uint8_t blinkPWM = 127;
 
-const uint16_t targetLow = 20_mA;
-const uint16_t targetHigh = 60_mA;
+const uint16_t targetLow = 30_mA;
+const uint16_t targetHigh = 160_mA;
 
 
 static uint8_t guessTargetPWM(uint16_t target)
